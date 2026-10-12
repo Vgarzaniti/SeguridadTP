@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OWASP Top 10:2025 — Laboratorio & Simulador Interactivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header / Navbar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo-group">
+        <div class="shield-badge">OWASP</div>
+        <div>
+          <h1 class="header-title">Top 10:2025 Security Lab</h1>
+          <p class="header-subtitle">Simulador práctico de vulnerabilidades críticas</p>
+        </div>
+      </div>
+      <div class="stats-badge">
+        <span class="pulse-dot"></span>
+        <span>Análisis sobre 2.8M Apps | 248 CWEs</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Intro / Resumen Global -->
+    <section class="overview-card">
+      <div class="overview-header">
+        <div>
+          <h2>Fundamentos de Seguridad Web</h2>
+          <p class="overview-lead">
+            El informe <strong>OWASP Top 10:2025</strong> prioriza las <em>causas raíz</em> de las fallas sobre sus síntomas.
+            Para este laboratorio seleccionamos los 3 vectores de ataque más críticos y didácticos del documento para experimentar su explotación y mitigación en tiempo real.
+          </p>
+        </div>
+        <div class="principles-box">
+          <div class="principle-item">
+            <span class="principle-num">01</span>
+            <strong>Conceptos > Código:</strong> No memorizar sintaxis; entender el flujo de ejecución.
+          </div>
+          <div class="principle-item">
+            <span class="principle-num">02</span>
+            <strong>Defensa en Profundidad:</strong> Controles en backend, nunca solo en el cliente.
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="tabs-nav" role="tablist">
+        <button class="tab-btn active" data-tab="tab-a01" role="tab" aria-selected="true">
+          <span class="tab-tag tag-a01">#1</span>
+          <span class="tab-name">A01: Control de Acceso (IDOR)</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-a05" role="tab" aria-selected="false">
+          <span class="tab-tag tag-a05">#5</span>
+          <span class="tab-name">A05: Inyección (SQLi)</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-a07" role="tab" aria-selected="false">
+          <span class="tab-tag tag-a07">#7</span>
+          <span class="tab-name">A07: Fallas de Autenticación</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- TAB 1: A01 BROKEN ACCESS CONTROL -->
+    <section id="tab-a01" class="tab-panel active">
+      <div class="vuln-grid">
+        <!-- Tarjeta Teórica Resumida -->
+        <div class="theory-card">
+          <div class="card-badge tag-a01">Puesto #1 en OWASP Top 10:2025</div>
+          <h3>A01: Broken Access Control</h3>
+          <p class="theory-desc">
+            Ocurre cuando el sistema no restringe qué puede hacer o ver un usuario autenticado. Presente en el <strong>100% de las aplicaciones analizadas</strong> en la edición 2025. Absorbió además la categoría SSRF.
+          </p>
+          <div class="metric-row">
+            <div class="metric">
+              <span class="metric-val">100%</span>
+              <span class="metric-label">Apps con incidencias</span>
+            </div>
+            <div class="metric">
+              <span class="metric-val">Causa Principal</span>
+              <span class="metric-label">Validaciones ausentes en API</span>
+            </div>
+          </div>
+          <div class="key-points">
+            <h4>Puntos Clave del Documento:</h4>
+            <ul>
+              <li><strong>Causa:</strong> Manipulación de parámetros de URL (IDOR), ausencia del principio de mínimo privilegio y comprobaciones hechas solo en el frontend.</li>
+              <li><strong>Impacto:</strong> Exfiltración o alteración de registros bancarios, médicos o personales de terceros.</li>
+              <li><strong>Mitigación:</strong> Validar pertenencia del recurso contra la sesión del token JWT/servidor en cada endpoint, no confiar en el cliente.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Simulador Interactivo A01 -->
+        <div class="sim-card">
+          <div class="sim-header">
+            <div>
+              <span class="sim-label">SIMULADOR EN VIVO</span>
+              <h4>Manipulación de Objeto Directo (IDOR)</h4>
+            </div>
+            <div class="mode-toggle-group">
+              <span class="mode-label" id="a01-mode-text">Modo: Vulnerable</span>
+              <label class="switch">
+                <input type="checkbox" id="a01-toggle-secure">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="sim-body">
+            <!-- Mock Session Status -->
+            <div class="auth-context-bar">
+              <span class="avatar-icon">👤</span>
+              <span class="auth-text">Sesión iniciada como: <strong>Juan Pérez</strong> (Tu ID de sesión legítimo: <code class="inline-code">acct=101</code>, Rol: <code class="inline-code">CLIENTE</code>)</span>
+            </div>
+
+            <!-- Interactive Request Bar -->
+            <div class="url-bar-container">
+              <span class="http-verb">GET</span>
+              <div class="url-input-wrap">
+                <span class="url-prefix">https://banco-seguro.com/api/v1/resumen-cuenta?acct=</span>
+                <input type="number" id="a01-input-id" value="101" min="100" max="103" class="param-input" title="Cambia este ID para probar acceso a otros usuarios">
+              </div>
+              <button class="btn btn-primary" id="a01-btn-send">
+                <span class="btn-spinner" id="a01-spinner" style="display:none;"></span>
+                <span class="btn-text">Enviar Request</span>
+              </button>
+            </div>
+
+            <!-- Network Pipeline Flow Animation -->
+            <div class="pipeline-container" id="a01-pipeline">
+              <div class="pipeline-node node-client" id="a01-node-client">
+                <span class="pipe-icon">💻</span>
+                <span class="pipe-label">Cliente (Browser)</span>
+              </div>
+              <div class="pipeline-wire"><div class="packet-tracer" id="a01-packet-1"></div></div>
+              <div class="pipeline-node node-auth" id="a01-node-auth">
+                <span class="pipe-icon">🛡️</span>
+                <span class="pipe-label">Auth Middleware</span>
+              </div>
+              <div class="pipeline-wire"><div class="packet-tracer" id="a01-packet-2"></div></div>
+              <div class="pipeline-node node-db" id="a01-node-db">
+                <span class="pipe-icon">🗄️</span>
+                <span class="pipe-label">Base de Datos</span>
+              </div>
+            </div>
+
+            <div class="preset-pills">
+              <span>IDs de prueba:</span>
+              <button class="pill-btn" data-target-id="101">101 (Mi propia cuenta)</button>
+              <button class="pill-btn" data-target-id="102">102 (María Gómez - Saldo confidencial)</button>
+              <button class="pill-btn" data-target-id="103">103 (Carlos Méndez - Datos médicos/VIP)</button>
+            </div>
+
+            <!-- Server Execution Trace & Response -->
+            <div class="sim-output-grid">
+              <div class="terminal-box">
+                <div class="terminal-top">
+                  <div class="terminal-title-wrap">
+                    <span>LOG DE INSPECCIÓN EN BACKEND</span>
+                    <span class="latency-badge" id="a01-latency">⏱ -- ms</span>
+                  </div>
+                  <span class="status-indicator" id="a01-status-pill">Listo</span>
+                </div>
+                <pre class="terminal-code" id="a01-server-log">/* Presiona "Enviar Request" para observar el tráfico en tiempo real */</pre>
+              </div>
+
+              <div class="result-box">
+                <div class="result-top">
+                  <span>RESPUESTA AL NAVEGADOR</span>
+                  <span class="size-badge" id="a01-response-size">0 B</span>
+                </div>
+                <div class="result-content" id="a01-response-view">
+                  <div class="empty-state-prompt">
+                    <span class="empty-icon">📡</span>
+                    <p>Esperando solicitud HTTP...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Code Comparison Tabs -->
+            <div class="code-diff-card">
+              <div class="diff-header">
+                <strong>Análisis de Código Fuente (Backend):</strong>
+                <span class="diff-tag" id="a01-code-badge">Código Vulnerable Activo</span>
+              </div>
+              <pre class="code-snippet" id="a01-code-preview"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: A05 INJECTION -->
+    <section id="tab-a05" class="tab-panel">
+      <div class="vuln-grid">
+        <!-- Tarjeta Teórica Resumida -->
+        <div class="theory-card">
+          <div class="card-badge tag-a05">Mayor volumen de CVEs</div>
+          <h3>A05: Injection (SQLi / XSS)</h3>
+          <p class="theory-desc">
+            Ocurre cuando datos no confiables suministrados por el usuario se concatenan directamente en un intérprete (SQL, comandos o navegador), haciendo que se ejecuten como instrucciones de código.
+          </p>
+          <div class="metric-row">
+            <div class="metric">
+              <span class="metric-val">+44.000</span>
+              <span class="metric-label">CVEs en XSS y SQLi</span>
+            </div>
+            <div class="metric">
+              <span class="metric-val">Impacto</span>
+              <span class="metric-label">Bypass total de Auth / Exfiltración</span>
+            </div>
+          </div>
+          <div class="key-points">
+            <h4>Puntos Clave del Documento:</h4>
+            <ul>
+              <li><strong>Causa:</strong> Falta de saneamiento y construcción de consultas dinámicas por concatenación en lugar de usar parámetros.</li>
+              <li><strong>Ejemplo clásico:</strong> Inyección con <code class="inline-code">' OR '1'='1</code> que anula las condiciones de filtrado en la base de datos.</li>
+              <li><strong>Mitigación:</strong> Consultas parametrizadas (Prepared Statements), validación de esquemas (Zod) y uso estricto de ORMs sin raw queries.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Simulador Interactivo A05 -->
+        <div class="sim-card">
+          <div class="sim-header">
+            <div>
+              <span class="sim-label">SIMULADOR EN VIVO</span>
+              <h4>Bypass de Autenticación con SQL Injection</h4>
+            </div>
+            <div class="mode-toggle-group">
+              <span class="mode-label" id="a05-mode-text">Modo: Vulnerable</span>
+              <label class="switch">
+                <input type="checkbox" id="a05-toggle-secure">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="sim-body">
+            <!-- Attack Form -->
+            <div class="sim-form-row">
+              <div class="form-group flex-2">
+                <label for="a05-input-user">Nombre de usuario (Input):</label>
+                <input type="text" id="a05-input-user" class="form-input" value="' OR '1'='1" placeholder="Ej: admin o ' OR '1'='1">
+              </div>
+              <div class="form-group flex-1">
+                <label for="a05-input-pass">Contraseña:</label>
+                <input type="text" id="a05-input-pass" class="form-input" value="cualquier_cosa" placeholder="Contraseña">
+              </div>
+              <div class="form-group form-actions">
+                <button class="btn btn-primary" id="a05-btn-exec">
+                  <span class="btn-spinner" id="a05-spinner" style="display:none;"></span>
+                  <span class="btn-text">Ejecutar Query</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Pipeline A05 -->
+            <div class="pipeline-container" id="a05-pipeline">
+              <div class="pipeline-node node-client" id="a05-node-client">
+                <span class="pipe-icon">🌐</span>
+                <span class="pipe-label">Frontend (Formulario)</span>
+              </div>
+              <div class="pipeline-wire"><div class="packet-tracer" id="a05-packet-1"></div></div>
+              <div class="pipeline-node node-auth" id="a05-node-sanitizer">
+                <span class="pipe-icon">⚙️</span>
+                <span class="pipe-label" id="a05-pipe-stage">Parser SQL</span>
+              </div>
+              <div class="pipeline-wire"><div class="packet-tracer" id="a05-packet-2"></div></div>
+              <div class="pipeline-node node-db" id="a05-node-db">
+                <span class="pipe-icon">💾</span>
+                <span class="pipe-label">Motor Relacional</span>
+              </div>
+            </div>
+
+            <div class="preset-pills">
+              <span>Payloads de prueba:</span>
+              <button class="pill-btn" data-sqli-user="admin" data-sqli-pass="clave123">Usuario Legítimo (admin / clave123)</button>
+              <button class="pill-btn" data-sqli-user="' OR '1'='1" data-sqli-pass="erronea">' OR '1'='1 (Bypass de Condición)</button>
+              <button class="pill-btn" data-sqli-user="admin' --" data-sqli-pass="ignorada">admin' -- (Comentario de línea SQL)</button>
+            </div>
+
+            <!-- SQL Query Breakdown in Real-Time -->
+            <div class="query-visualizer">
+              <div class="query-header">CONSULTA SQL EVALUADA EN EL MOTOR DE BASE DE DATOS:</div>
+              <div class="query-code-rendered" id="a05-query-render"></div>
+              <div class="query-explanation" id="a05-logic-expl"></div>
+            </div>
+
+            <!-- Server Outcome -->
+            <div class="sim-output-grid">
+              <div class="terminal-box">
+                <div class="terminal-top">
+                  <div class="terminal-title-wrap">
+                    <span>RESULTADO DE LA CONSULTA SQL</span>
+                    <span class="latency-badge" id="a05-latency">⏱ -- ms</span>
+                  </div>
+                  <span class="status-indicator" id="a05-status-pill">Listo</span>
+                </div>
+                <pre class="terminal-code" id="a05-terminal-result"></pre>
+              </div>
+
+              <div class="result-box">
+                <div class="result-top">ESTADO DEL LOGIN</div>
+                <div class="result-content" id="a05-ui-result">
+                  <div class="empty-state-prompt">
+                    <span class="empty-icon">🔐</span>
+                    <p>Ingresa credenciales y ejecuta la query</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Code Comparison -->
+            <div class="code-diff-card">
+              <div class="diff-header">
+                <strong>Análisis de Código Fuente (Database Layer):</strong>
+                <span class="diff-tag" id="a05-code-badge">Consulta Insegura (Concatenación)</span>
+              </div>
+              <pre class="code-snippet" id="a05-code-preview"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: A07 AUTHENTICATION FAILURES -->
+    <section id="tab-a07" class="tab-panel">
+      <div class="vuln-grid">
+        <!-- Tarjeta Teórica Resumida -->
+        <div class="theory-card">
+          <div class="card-badge tag-a07">Riesgo Permanente</div>
+          <h3>A07: Authentication Failures</h3>
+          <p class="theory-desc">
+            Se produce cuando un atacante consigue que el sistema lo reconozca como un usuario legítimo mediante automatización, contraseñas débiles o falta de protección contra ataques repetidos.
+          </p>
+          <div class="metric-row">
+            <div class="metric">
+              <span class="metric-val">36 Grupos</span>
+              <span class="metric-label">Debilidades asociadas</span>
+            </div>
+            <div class="metric">
+              <span class="metric-val">Ataque Típico</span>
+              <span class="metric-label">Credential Stuffing / Brute Force</span>
+            </div>
+          </div>
+          <div class="key-points">
+            <h4>Puntos Clave del Documento:</h4>
+            <ul>
+              <li><strong>Causa:</strong> Falta de bloqueo o retardos progresivos (rate limiting), contraseñas filtradas (ej. "Winter2025" → "Winter2026") y ausencia de MFA.</li>
+              <li><strong>Riesgo:</strong> El backend se transforma en un "oráculo" que valida combinaciones ilimitadamente.</li>
+              <li><strong>Mitigación:</strong> Guía NIST 800-63b, bloqueo de IP/cuenta por umbral, autenticación multifactor (MFA) y chequeo contra listas de filtraciones.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Simulador Interactivo A07 -->
+        <div class="sim-card">
+          <div class="sim-header">
+            <div>
+              <span class="sim-label">SIMULADOR EN VIVO</span>
+              <h4>Ataque Automatizado de Fuerza Bruta (Credential Stuffing)</h4>
+            </div>
+            <div class="mode-toggle-group">
+              <span class="mode-label" id="a07-mode-text">Modo: Vulnerable</span>
+              <label class="switch">
+                <input type="checkbox" id="a07-toggle-secure">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="sim-body">
+            <!-- Controls & Attack Trigger -->
+            <div class="auth-attack-controls">
+              <div class="target-account-info">
+                <span>Cuenta objetivo: <strong>admin@empresa.com</strong></span>
+                <span class="target-secret">Contraseña real de la víctima: <code>Winter2026!</code></span>
+              </div>
+
+              <div class="attack-actions">
+                <button class="btn btn-danger" id="a07-btn-start-attack">
+                  <span class="btn-icon">⚡</span> Iniciar Ataque Automatizado (Diccionario)
+                </button>
+                <button class="btn btn-outline" id="a07-btn-reset">Reiniciar Estado</button>
+              </div>
+            </div>
+
+            <!-- Real-time Rate Limiter / Defense Monitor -->
+            <div class="defense-status-panel" id="a07-defense-panel">
+              <div class="def-item">
+                <span class="def-label">Intentos realizados</span>
+                <span class="def-val" id="a07-attempt-counter">0 / 6</span>
+              </div>
+              <div class="def-item">
+                <span class="def-label">Rate Limiting</span>
+                <span class="def-val badge-off" id="a07-ratelimit-status">DESACTIVADO</span>
+              </div>
+              <div class="def-item">
+                <span class="def-label">MFA Requerido</span>
+                <span class="def-val badge-off" id="a07-mfa-status">NO</span>
+              </div>
+              <div class="def-item">
+                <span class="def-label">Estado de la cuenta</span>
+                <span class="def-val badge-ok" id="a07-account-status">ABIERTA</span>
+              </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="progress-wrap">
+              <div class="progress-bar" id="a07-progress-bar"></div>
+            </div>
+
+            <!-- Attack Stream Logs -->
+            <div class="attack-log-box">
+              <div class="log-header">
+                <span>CONSOLA DEL ATACANTE vs RESPUESTAS DEL SERVIDOR HTTP</span>
+                <span class="log-badge" id="a07-log-badge">Listo para ejecutar</span>
+              </div>
+              <div class="log-entries" id="a07-log-list">
+                <div class="log-entry system-msg">[SISTEMA] Presione "Iniciar Ataque Automatizado" para simular el botnet probando combinaciones de contraseñas.</div>
+              </div>
+            </div>
+
+            <!-- Code Comparison -->
+            <div class="code-diff-card">
+              <div class="diff-header">
+                <strong>Análisis de Código Fuente (Auth Middleware):</strong>
+                <span class="diff-tag" id="a07-code-badge">Sin Límite de Peticiones</span>
+              </div>
+              <pre class="code-snippet" id="a07-code-preview"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>Desarrollado para el TP de Seguridad Web — Análisis Práctico de <strong>OWASP Top 10:2025</strong></p>
+      <p class="footer-note">Arquitectura de Software Segura: Principio de Menor Privilegio, Consultas Parametrizadas y Autenticación Resiliente.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
