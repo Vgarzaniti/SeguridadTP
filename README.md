@@ -73,12 +73,37 @@ O simplemente haciendo doble clic en el archivo `index.html`.
 
 ---
 
+## 📊 Presentación Grupal (PPTX para 5 Expositores)
+
+El repositorio incluye el archivo listo para presentar **`OWASP_Top_10_2025_Presentacion.pptx`** (formato 16:9 con estética oscura de ciberseguridad), distribuido en 13 diapositivas equilibradas entre 5 oradores:
+
+1. **Orador 1 — Introducción y Estado del Arte**:
+   * Qué es OWASP, espacio del problema (APIs, Cloud y CI/CD) y diferencia entre Riesgo vs. Vulnerabilidad.
+   * Metodología de la edición 2025 (2.8M de apps, 248 CWEs) y cambios respecto a 2021.
+2. **Orador 2 — Puestos #1 y #2 (Control de Acceso y Configuración)**:
+   * **A01: Broken Access Control**: 100% de prevalencia, IDOR y absorción de SSRF.
+   * **A02: Security Misconfiguration**: El salto del puesto 5 al 2 debido a la complejidad de la nube.
+3. **Orador 3 — Puestos #3 y #4 (Cadena de Suministro y Criptografía)**:
+   * **A03: Software Supply Chain Failures**: Nueva categoría 2025, caso SolarWinds y SBOM.
+   * **A04: Cryptographic Failures**: Algoritmos obsoletos, números pseudoaleatorios y TLS.
+4. **Orador 4 — Puestos #5 y #6 (Inyección y Diseño)**:
+   * **A05: Injection**: Récord histórico con +44.000 CVEs (SQLi y XSS) y Prepared Statements.
+   * **A06: Insecure Design**: Separar diseño de implementación, fallas de negocio y Threat Modeling.
+5. **Orador 5 — Puestos #7 al #10 y Cierre con Demo**:
+   * **A07** (Autenticación y Fuerza Bruta) & **A08** (Integridad y Deserialización).
+   * **A09** (Alertas sobre Monitoreo) & **A10** (Condiciones Excepcionales y Fallas Abiertas).
+   * Conclusiones generales y pase a la **Demostración en Vivo del Simulador Web**.
+
+---
+
 ## 📁 Estructura del Repositorio
 
 ```text
 SeguridadTP/
-├── index.html     # Estructura semántica, paneles del laboratorio y vistas
-├── styles.css     # Diseño visual oscuro estilo Dashboard de Ciberseguridad
-├── app.js         # Lógica interactiva, motor de simulación y audio synth
-└── README.md      # Documentación académica y técnica del proyecto
+├── index.html                           # Estructura semántica, paneles del laboratorio y vistas
+├── styles.css                           # Diseño visual oscuro estilo Dashboard de Ciberseguridad
+├── app.js                               # Lógica interactiva, motor de simulación y audio synth
+├── OWASP_Top_10_2025_Presentacion.pptx  # Presentación en diapositivas para 5 integrantes
+├── build_presentation.py                # Script generador automatizado de la presentación
+└── README.md                            # Documentación académica y técnica del proyecto
 ```
