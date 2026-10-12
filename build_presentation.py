@@ -7,511 +7,942 @@ from pptx.enum.shapes import MSO_SHAPE
 
 def create_deck():
     prs = Presentation()
-    # 16:9 Widescreen dimensions
     prs.slide_width = Inches(13.333)
     prs.slide_height = Inches(7.5)
-
     blank_layout = prs.slide_layouts[6]
 
     # Palette
-    COLOR_BG = RGBColor(11, 17, 32)         # #0B1120 Dark Navy Slate
-    COLOR_CARD = RGBColor(19, 29, 51)       # #131D33 Card Background
-    COLOR_BORDER = RGBColor(36, 50, 77)     # #24324D Border
-    COLOR_CYAN = RGBColor(6, 182, 212)      # #06B6D4 Accent Cyan
-    COLOR_BLUE = RGBColor(59, 130, 246)     # #3B82F6 Blue
-    COLOR_EMERALD = RGBColor(16, 185, 129)  # #10B981 Emerald
-    COLOR_CRIMSON = RGBColor(239, 68, 68)   # #EF4444 Crimson
-    COLOR_AMBER = RGBColor(245, 158, 11)    # #F59E0B Amber
-    COLOR_PURPLE = RGBColor(139, 92, 246)   # #8B5CF6 Purple
-    COLOR_WHITE = RGBColor(241, 245, 249)   # #F1F5F9 Heading
-    COLOR_TEXT = RGBColor(203, 213, 225)    # #CBD5E1 Body text
-    COLOR_MUTED = RGBColor(148, 163, 184)   # #94A3B8 Muted
+    C_BG = RGBColor(11, 17, 32)          # #0B1120 Fondo principal
+    C_CARD = RGBColor(19, 29, 51)        # #131D33 Tarjeta
+    C_CARD_ALT = RGBColor(24, 37, 65)    # #182541 Tarjeta secundaria
+    C_BORDER = RGBColor(36, 50, 77)      # #24324D Borde
+    C_CYAN = RGBColor(6, 182, 212)       # #06B6D4 Cian
+    C_BLUE = RGBColor(59, 130, 246)      # #3B82F6 Azul
+    C_EMERALD = RGBColor(16, 185, 129)   # #10B981 Esmeralda
+    C_CRIMSON = RGBColor(239, 68, 68)    # #EF4444 Rojo
+    C_AMBER = RGBColor(245, 158, 11)     # #F59E0B Ámbar
+    C_PURPLE = RGBColor(139, 92, 246)    # #8B5CF6 Violeta
+    C_WHITE = RGBColor(241, 245, 249)    # #F1F5F9 Título
+    C_TEXT = RGBColor(203, 213, 225)     # #CBD5E1 Texto principal
+    C_MUTED = RGBColor(148, 163, 184)    # #94A3B8 Texto secundario
+    C_CODE_BG = RGBColor(8, 12, 20)      # Fondo consola
 
-    def apply_bg(slide):
-        bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, prs.slide_width, prs.slide_height)
-        bg.fill.solid()
-        bg.fill.fore_color.rgb = COLOR_BG
-        bg.line.fill.background() # no border
-        return bg
+    def bg(slide):
+        s = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, prs.slide_width, prs.slide_height)
+        s.fill.solid()
+        s.fill.fore_color.rgb = C_BG
+        s.line.fill.background()
+        return s
 
-    def add_header(slide, title, category_tag, speaker_tag, tag_color=COLOR_CYAN):
-        # Speaker pill badge
-        spk_box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.4), Inches(3.2), Inches(0.4))
-        spk_box.fill.solid()
-        spk_box.fill.fore_color.rgb = COLOR_CARD
-        spk_box.line.color.rgb = tag_color
-        spk_box.line.width = Pt(1)
-        tf_spk = spk_box.text_frame
-        tf_spk.word_wrap = True
-        p_spk = tf_spk.paragraphs[0]
-        p_spk.text = speaker_tag.upper()
-        p_spk.font.size = Pt(10.5)
-        p_spk.font.bold = True
-        p_spk.font.color.rgb = tag_color
-        p_spk.alignment = PP_ALIGN.CENTER
-
-        # Category tag
-        if category_tag:
-            cat_box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(4.2), Inches(0.4), Inches(3.5), Inches(0.4))
-            cat_box.fill.solid()
-            cat_box.fill.fore_color.rgb = COLOR_CARD
-            cat_box.line.color.rgb = COLOR_BORDER
-            cat_box.line.width = Pt(1)
-            tf_cat = cat_box.text_frame
-            p_cat = tf_cat.paragraphs[0]
-            p_cat.text = category_tag.upper()
-            p_cat.font.size = Pt(10)
-            p_cat.font.bold = True
-            p_cat.font.color.rgb = COLOR_MUTED
-            p_cat.alignment = PP_ALIGN.CENTER
+    def slide_header(slide, title, category="OWASP TOP 10:2025", accent=C_CYAN):
+        # Category pill
+        pill = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.42), Inches(3.4), Inches(0.35))
+        pill.fill.solid()
+        pill.fill.fore_color.rgb = C_CARD
+        pill.line.color.rgb = accent
+        pill.line.width = Pt(1)
+        tf_p = pill.text_frame
+        p_p = tf_p.paragraphs[0]
+        p_p.text = category.upper()
+        p_p.font.size = Pt(10)
+        p_p.font.bold = True
+        p_p.font.color.rgb = accent
+        p_p.alignment = PP_ALIGN.CENTER
 
         # Title
-        t_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.85), Inches(11.7), Inches(0.8))
-        tf_t = t_box.text_frame
-        tf_t.word_wrap = True
-        p_t = tf_t.paragraphs[0]
-        p_t.text = title
-        p_t.font.size = Pt(24)
-        p_t.font.bold = True
-        p_t.font.color.rgb = COLOR_WHITE
-
-    def add_card(slide, left, top, width, height, title, items, badge=None, accent_color=COLOR_CYAN):
-        card = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(left), Inches(top), Inches(width), Inches(height))
-        card.fill.solid()
-        card.fill.fore_color.rgb = COLOR_CARD
-        card.line.color.rgb = COLOR_BORDER
-        card.line.width = Pt(1)
-
-        tf = card.text_frame
+        tb = slide.shapes.add_textbox(Inches(0.8), Inches(0.82), Inches(11.7), Inches(0.75))
+        tf = tb.text_frame
         tf.word_wrap = True
-        tf.margin_left = Inches(0.25)
-        tf.margin_right = Inches(0.25)
-        tf.margin_top = Inches(0.22)
-        tf.margin_bottom = Inches(0.22)
-
-        # Title
-        p0 = tf.paragraphs[0]
-        p0.text = title
-        p0.font.size = Pt(15)
-        p0.font.bold = True
-        p0.font.color.rgb = accent_color
-        p0.space_after = Pt(8)
-
-        if badge:
-            p_badge = tf.add_paragraph()
-            p_badge.text = f"[{badge}]"
-            p_badge.font.size = Pt(9.5)
-            p_badge.font.bold = True
-            p_badge.font.color.rgb = COLOR_MUTED
-            p_badge.space_after = Pt(8)
-
-        for it in items:
-            p = tf.add_paragraph()
-            p.text = f"• {it}"
-            p.font.size = Pt(12)
-            p.font.color.rgb = COLOR_TEXT
-            p.space_after = Pt(6)
-
-        return card
+        p = tf.paragraphs[0]
+        p.text = title
+        p.font.size = Pt(22)
+        p.font.bold = True
+        p.font.color.rgb = C_WHITE
 
     # =========================================================================
-    # SLIDE 1: PORTADA
+    # SLIDE 1: PORTADA ELEGANTE CON INTEGRANTES
     # =========================================================================
     s1 = prs.slides.add_slide(blank_layout)
-    apply_bg(s1)
+    bg(s1)
 
-    # Accent decorative bar
-    bar = s1.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.8), Inches(0.15), Inches(3.8))
-    bar.fill.solid()
-    bar.fill.fore_color.rgb = COLOR_CYAN
-    bar.line.fill.background()
+    # Decorative banner line
+    dec = s1.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.3), Inches(0.12), Inches(4.8))
+    dec.fill.solid()
+    dec.fill.fore_color.rgb = C_CYAN
+    dec.line.fill.background()
 
     # Title box
-    t_box = s1.shapes.add_textbox(Inches(1.2), Inches(1.6), Inches(11.0), Inches(2.2))
-    tf = t_box.text_frame
+    tb = s1.shapes.add_textbox(Inches(1.2), Inches(1.2), Inches(11.2), Inches(2.2))
+    tf = tb.text_frame
     tf.word_wrap = True
     p1 = tf.paragraphs[0]
-    p1.text = "OWASP Top 10: 2025"
-    p1.font.size = Pt(44)
+    p1.text = "OWASP Top 10:2025"
+    p1.font.size = Pt(46)
     p1.font.bold = True
-    p1.font.color.rgb = COLOR_WHITE
+    p1.font.color.rgb = C_WHITE
 
     p2 = tf.add_paragraph()
-    p2.text = "Análisis de Riesgos Críticos en Aplicaciones Web & Mitigación Práctica"
+    p2.text = "Análisis Exhaustivo de Riesgos en Aplicaciones Web & Mitigación Práctica"
     p2.font.size = Pt(20)
-    p2.font.color.rgb = COLOR_CYAN
+    p2.font.color.rgb = C_CYAN
     p2.space_before = Pt(8)
 
     p3 = tf.add_paragraph()
-    p3.text = "Basado en el estudio de 2.8M de aplicaciones y 248 debilidades de software (CWE)"
+    p3.text = "Monografía Técnica y Demostración Interactiva sobre 2.8 Millones de Aplicaciones"
     p3.font.size = Pt(13)
-    p3.font.color.rgb = COLOR_MUTED
-    p3.space_before = Pt(8)
+    p3.font.color.rgb = C_MUTED
+    p3.space_before = Pt(6)
 
-    # Team Info Box
-    card_team = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(4.3), Inches(10.8), Inches(2.0))
-    card_team.fill.solid()
-    card_team.fill.fore_color.rgb = COLOR_CARD
-    card_team.line.color.rgb = COLOR_BORDER
-    card_team.line.width = Pt(1)
-    tf_team = card_team.text_frame
-    tf_team.margin_left = Inches(0.3)
-    tf_team.margin_top = Inches(0.2)
+    # Integrantes Card
+    t_box = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(3.8), Inches(11.2), Inches(2.3))
+    t_box.fill.solid()
+    t_box.fill.fore_color.rgb = C_CARD
+    t_box.line.color.rgb = C_BORDER
+    t_box.line.width = Pt(1)
+    tf_t = t_box.text_frame
+    tf_t.margin_left = Inches(0.35)
+    tf_t.margin_top = Inches(0.25)
 
-    p_t1 = tf_team.paragraphs[0]
-    p_t1.text = "PRESENTACIÓN GRUPAL (5 EXPOSITORES):"
-    p_t1.font.size = Pt(12)
-    p_t1.font.bold = True
-    p_t1.font.color.rgb = COLOR_AMBER
+    p_lbl = tf_t.paragraphs[0]
+    p_lbl.text = "INTEGRANTES DEL EQUIPO:"
+    p_lbl.font.size = Pt(11)
+    p_lbl.font.bold = True
+    p_lbl.font.color.rgb = C_AMBER
+    p_lbl.space_after = Pt(12)
 
-    p_t2 = tf_team.add_paragraph()
-    p_t2.text = "• Orador 1: Introducción, Metodología y Estado de la Seguridad\n• Orador 2: A01 (Control de Acceso) & A02 (Configuración Insegura)\n• Orador 3: A03 (Cadena de Suministro) & A04 (Fallas Criptográficas)\n• Orador 4: A05 (Inyección) & A06 (Diseño Inseguro)\n• Orador 5: A07 a A10 (Autenticación, Integridad, Logs, Excepciones) & Demo del Simulador"
-    p_t2.font.size = Pt(11.5)
-    p_t2.font.color.rgb = COLOR_TEXT
-    p_t2.space_before = Pt(4)
+    # Member badges as horizontal pill shapes
+    integrantes = [
+        "Valentín Garzaniti",
+        "Romeo Monfroglio",
+        "Valentino Laure",
+        "Joaquín Caputto",
+        "Mauro Lista"
+    ]
+    pill_w = 2.05
+    start_x = 1.45
+    for i, name in enumerate(integrantes):
+        m_pill = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(start_x + (i * 2.15)), Inches(4.7), Inches(pill_w), Inches(0.8))
+        m_pill.fill.solid()
+        m_pill.fill.fore_color.rgb = C_CARD_ALT
+        m_pill.line.color.rgb = C_CYAN
+        m_pill.line.width = Pt(1)
+        tf_m = m_pill.text_frame
+        tf_m.word_wrap = True
+        tf_m.margin_top = Inches(0.12)
+        p_m = tf_m.paragraphs[0]
+        p_m.text = name
+        p_m.font.size = Pt(12)
+        p_m.font.bold = True
+        p_m.font.color.rgb = C_WHITE
+        p_m.alignment = PP_ALIGN.CENTER
 
     # =========================================================================
-    # SLIDE 2: ESTRUCTURA & AGENDA
+    # SLIDE 2: BIG STATS & METODOLOGÍA (LAYOUT DE NÚMEROS GIGANTES)
     # =========================================================================
     s2 = prs.slides.add_slide(blank_layout)
-    apply_bg(s2)
-    add_header(s2, "Agenda de la Presentación & Distribución de Roles", "Metodología de Exposición", "Equipo Completo", COLOR_BLUE)
+    bg(s2)
+    slide_header(s2, "Metodología y Alcance: ¿Cómo se construyó la Edición 2025?", "Datos y Estadísticas Globales", C_BLUE)
 
-    add_card(s2, 0.8, 1.8, 2.2, 5.0, "Orador 1", [
-        "Qué es OWASP",
-        "Espacio del problema (Web/APIs)",
-        "Riesgo vs Vulnerabilidad",
-        "Metodología edición 2025",
-        "Comparativa 2021 vs 2025"
-    ], "Bloque Introductorio", COLOR_BLUE)
+    stats = [
+        ("2.8M+", "Aplicaciones Analizadas", "Estudio masivo provisto por firmas líderes como Veracode, Sonar y Contrast Security.", C_CYAN),
+        ("248", "Debilidades CWE Evaluadas", "Agrupadas a partir de 589 debilidades iniciales hacia 10 categorías finales de riesgo.", C_BLUE),
+        ("2", "Nuevas Categorías en 2025", "Fallas en Cadena de Suministro (A03) y Mal Manejo de Excepciones (A10).", C_AMBER),
+        ("100%", "Prevalencia en Puesto #1 y #2", "El total de aplicaciones probadas presentó fallas en control de acceso y configuración.", C_CRIMSON)
+    ]
 
-    add_card(s2, 3.2, 1.8, 2.2, 5.0, "Orador 2", [
-        "A01: Broken Access Control",
-        "Absorción de SSRF",
-        "100% incidencia en apps",
-        "A02: Security Misconfiguration",
-        "Ascenso al puesto #2",
-        "Impacto estructural"
-    ], "Top 1 y 2", COLOR_CRIMSON)
+    for i, (num, label, desc, col) in enumerate(stats):
+        bx = s2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8 + (i * 2.95)), Inches(1.8), Inches(2.8), Inches(4.9))
+        bx.fill.solid()
+        bx.fill.fore_color.rgb = C_CARD
+        bx.line.color.rgb = C_BORDER
+        bx.line.width = Pt(1)
+        tf_b = bx.text_frame
+        tf_b.word_wrap = True
+        tf_b.margin_left = Inches(0.2)
+        tf_b.margin_right = Inches(0.2)
+        tf_b.margin_top = Inches(0.3)
 
-    add_card(s2, 5.6, 1.8, 2.2, 5.0, "Orador 3", [
-        "A03: Software Supply Chain",
-        "Nueva categoría 2025",
-        "Caso SolarWinds & SBOM",
-        "A04: Cryptographic Failures",
-        "Algoritmos obsoletos",
-        "Fugas de claves y TLS"
-    ], "Top 3 y 4", COLOR_AMBER)
+        p_num = tf_b.paragraphs[0]
+        p_num.text = num
+        p_num.font.size = Pt(36)
+        p_num.font.bold = True
+        p_num.font.color.rgb = col
+        p_num.space_after = Pt(8)
 
-    add_card(s2, 8.0, 1.8, 2.2, 5.0, "Orador 4", [
-        "A05: Injection (SQLi/XSS)",
-        "+44k CVEs históricos",
-        "Prepared Statements",
-        "A06: Insecure Design",
-        "Diseño vs Implementación",
-        "Modelado de Amenazas"
-    ], "Top 5 y 6", COLOR_PURPLE)
+        p_lbl = tf_b.add_paragraph()
+        p_lbl.text = label
+        p_lbl.font.size = Pt(13)
+        p_lbl.font.bold = True
+        p_lbl.font.color.rgb = C_WHITE
+        p_lbl.space_after = Pt(12)
 
-    add_card(s2, 10.4, 1.8, 2.2, 5.0, "Orador 5", [
-        "A07: Authentication Failures",
-        "A08: Integridad Software/Datos",
-        "A09: Registro y Alertas",
-        "A10: Condiciones Excepcionales",
-        "Conclusiones Generales",
-        "Demo Simulador Web"
-    ], "Top 7-10 + Demo", COLOR_EMERALD)
+        p_desc = tf_b.add_paragraph()
+        p_desc.text = desc
+        p_desc.font.size = Pt(11)
+        p_desc.font.color.rgb = C_MUTED
+        p_desc.line_spacing = 1.25
 
     # =========================================================================
-    # SLIDE 3: ORADOR 1 - INTRODUCCIÓN Y ESPACIO DEL PROBLEMA
+    # SLIDE 3: CONCEPTUAL HERO: RIESGO VS VULNERABILIDAD & ESPACIO DEL PROBLEMA
     # =========================================================================
     s3 = prs.slides.add_slide(blank_layout)
-    apply_bg(s3)
-    add_header(s3, "Espacio del Problema: La Superficie de Ataque Moderna", "Fundamentos de Seguridad", "Orador 1")
+    bg(s3)
+    slide_header(s3, "Fundamentos Arquitectónicos: Riesgo vs. Vulnerabilidad", "Conceptos Fundamentales", C_EMERALD)
 
-    add_card(s3, 0.8, 1.8, 3.7, 5.0, "¿Qué es OWASP?", [
-        "Open Worldwide Application Security Project.",
-        "Organización global sin fines de lucro enfocada en la seguridad del software.",
-        "El Top 10 es el estándar de facto adoptado por la industria internacional.",
-        "Objetivo: Educar a desarrolladores y arquitectos en mitigación preventiva."
-    ], "Estándar Global", COLOR_CYAN)
+    # Formula Box across the top
+    f_box = s3.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.7), Inches(11.7), Inches(1.4))
+    f_box.fill.solid()
+    f_box.fill.fore_color.rgb = C_CARD_ALT
+    f_box.line.color.rgb = C_EMERALD
+    f_box.line.width = Pt(1)
+    tf_f = f_box.text_frame
+    tf_f.margin_top = Inches(0.2)
+    tf_f.margin_left = Inches(0.4)
+    p_f1 = tf_f.paragraphs[0]
+    p_f1.text = "FÓRMULA CONCEPTUAL DE EVALUACIÓN OWASP:"
+    p_f1.font.size = Pt(11)
+    p_f1.font.bold = True
+    p_f1.font.color.rgb = C_EMERALD
+    p_f2 = tf_f.add_paragraph()
+    p_f2.text = "RIESGO = Agente Atacante + Vector de Entrada + Facilidad de Explotación + Daño al Negocio"
+    p_f2.font.size = Pt(16)
+    p_f2.font.bold = True
+    p_f2.font.color.rgb = C_WHITE
+    p_f2.space_before = Pt(4)
 
-    add_card(s3, 4.8, 1.8, 3.7, 5.0, "El Espacio del Problema", [
-        "Aplicaciones web acopladas a APIs y microservicios expuestos a Internet.",
-        "Dependencia masiva de paquetes de terceros y repositorios públicos.",
-        "Infraestructura cloud distribuida con pipelines CI/CD automatizados.",
-        "Cada capa adicional expande exponencialmente la superficie de ataque."
-    ], "Ecosistema Actual", COLOR_BLUE)
+    # 2 Comparison Columns Below
+    c1 = s3.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(3.3), Inches(5.7), Inches(3.5))
+    c1.fill.solid()
+    c1.fill.fore_color.rgb = C_CARD
+    c1.line.color.rgb = C_BORDER
+    tf_c1 = c1.text_frame
+    tf_c1.margin_left = Inches(0.3)
+    tf_c1.margin_top = Inches(0.25)
+    p_c1_t = tf_c1.paragraphs[0]
+    p_c1_t.text = "VULNERABILIDAD (Falla Técnica)"
+    p_c1_t.font.size = Pt(14)
+    p_c1_t.font.bold = True
+    p_c1_t.font.color.rgb = C_AMBER
+    p_c1_t.space_after = Pt(8)
+    bullets_v = [
+        "Debilidad interna en el código fuente, configuración o diseño del sistema.",
+        "Existe de forma pasiva aunque nadie la esté explotando en este momento.",
+        "Ejemplo: Un puerto innecesario abierto en un contenedor o una variable sin sanear."
+    ]
+    for b in bullets_v:
+        p = tf_c1.add_paragraph()
+        p.text = f"• {b}"
+        p.font.size = Pt(11.5)
+        p.font.color.rgb = C_TEXT
+        p.space_after = Pt(6)
 
-    add_card(s3, 8.8, 1.8, 3.7, 5.0, "Riesgo vs Vulnerabilidad", [
-        "Vulnerabilidad: Debilidad o fallo técnico en el código o configuración.",
-        "Riesgo = Vector de Ataque + Facilidad de Explotación + Impacto al Negocio.",
-        "El OWASP Top 10 prioriza Riesgos: el daño real potencial a datos y operaciones.",
-        "No todo bug técnico representa un riesgo crítico."
-    ], "Diferenciación Clave", COLOR_EMERALD)
+    c2 = s3.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(6.8), Inches(3.3), Inches(5.7), Inches(3.5))
+    c2.fill.solid()
+    c2.fill.fore_color.rgb = C_CARD
+    c2.line.color.rgb = C_BORDER
+    tf_c2 = c2.text_frame
+    tf_c2.margin_left = Inches(0.3)
+    tf_c2.margin_top = Inches(0.25)
+    p_c2_t = tf_c2.paragraphs[0]
+    p_c2_t.text = "RIESGO (Impacto Real)"
+    p_c2_t.font.size = Pt(14)
+    p_c2_t.font.bold = True
+    p_c2_t.font.color.rgb = C_CRIMSON
+    p_c2_t.space_after = Pt(8)
+    bullets_r = [
+        "Mide la probabilidad y severidad de que un atacante comprometa activos críticos.",
+        "El Top 10:2025 prioriza causas raíz: atacar el problema de fondo, no solo el bug sintáctico.",
+        "Las aplicaciones web modernas integran APIs, Cloud y pipelines CI/CD que maximizan el riesgo."
+    ]
+    for b in bullets_r:
+        p = tf_c2.add_paragraph()
+        p.text = f"• {b}"
+        p.font.size = Pt(11.5)
+        p.font.color.rgb = C_TEXT
+        p.space_after = Pt(6)
 
     # =========================================================================
-    # SLIDE 4: ORADOR 1 - CONSTRUCCIÓN Y NOVEDADES 2025
+    # SLIDE 4: TABLA COMPARATIVA COMPLETA (2025 vs 2021)
     # =========================================================================
     s4 = prs.slides.add_slide(blank_layout)
-    apply_bg(s4)
-    add_header(s4, "Construcción del OWASP Top 10:2025 y Grandes Cambios", "Metodología y Datos", "Orador 1")
+    bg(s4)
+    slide_header(s4, "El Mapa Completo: Tabla Comparativa OWASP Top 10 (2025 vs. 2021)", "Evolución y Cambios de Puesto", C_BLUE)
 
-    add_card(s4, 0.8, 1.8, 5.7, 5.0, "Metodología Basada en Evidencia", [
-        "Evaluación masiva: Más de 2.8 millones de aplicaciones auditadas.",
-        "Fuentes líderes de telemetría: Veracode, Sonar, Contrast Security, etc.",
-        "Análisis inicial de 589 CWEs agrupadas en 248 debilidades finales.",
-        "8 categorías surgieron de datos empíricos y 2 por encuesta comunitaria.",
-        "Cambio de paradigma: Priorización de la CAUSA RAÍZ por sobre los síntomas."
-    ], "Datos Duros", COLOR_BLUE)
+    table_shape = s4.shapes.add_table(11, 4, Inches(0.8), Inches(1.7), Inches(11.7), Inches(5.1))
+    tbl = table_shape.table
+    tbl.columns[0].width = Inches(1.1)  # Código
+    tbl.columns[1].width = Inches(4.5)  # Categoría 2025
+    tbl.columns[2].width = Inches(3.2)  # Cambio frente a 2021
+    tbl.columns[3].width = Inches(2.9)  # Estado / Tipo
 
-    add_card(s4, 6.8, 1.8, 5.7, 5.0, "Grandes Novedades frente a 2021", [
-        "A01 (Broken Access Control) se mantiene #1 y absorbe a SSRF.",
-        "A02 (Security Misconfiguration) asciende drásticamente del puesto 5 al 2.",
-        "NUEVA: A03 Software Supply Chain Failures (refleja el riesgo en compilación y CI/CD).",
-        "A04 (Criptografía) y A05 (Inyección) bajan puestos relativos ante fallas arquitectónicas.",
-        "NUEVA: A10 Mishandling of Exceptional Conditions (mal manejo de errores y fallas abiertas)."
-    ], "Evolución de Amenazas", COLOR_AMBER)
+    headers = ["#", "Categoría (Edición 2025)", "Cambio frente a 2021", "Naturaleza del Riesgo"]
+    for col_idx, h_text in enumerate(headers):
+        cell = tbl.cell(0, col_idx)
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = C_CARD_ALT
+        p = cell.text_frame.paragraphs[0]
+        p.text = h_text
+        p.font.size = Pt(11)
+        p.font.bold = True
+        p.font.color.rgb = C_CYAN
+
+    data = [
+        ("A01", "Broken Access Control (Control de Acceso)", "Sigue #1, absorbe SSRF", "100% de apps afectadas", C_CRIMSON),
+        ("A02", "Security Misconfiguration (Configuración)", "Subió del puesto 5 al 2", "Complejidad Cloud / Defaults", C_CRIMSON),
+        ("A03", "Software Supply Chain Failures", "NUEVA en 2025 (Ex-Componentes)", "Compilación / CI/CD / SBOM", C_AMBER),
+        ("A04", "Cryptographic Failures (Fallas Criptográficas)", "Bajó del puesto 2 al 4", "TLS / Claves / Random débil", C_BLUE),
+        ("A05", "Injection (Inyección SQL, XSS, etc.)", "Bajó del puesto 3 al 5", "+44.000 CVEs históricos", C_PURPLE),
+        ("A06", "Insecure Design (Diseño Inseguro)", "Bajó del puesto 4 al 6", "Lógica de negocio y modelos", C_BLUE),
+        ("A07", "Authentication Failures (Autenticación)", "Mismo puesto (7), cambió nombre", "Credential Stuffing / MFA", C_AMBER),
+        ("A08", "Software or Data Integrity Failures", "Mismo puesto (8), cambió nombre", "Firmas / Deserialización", C_BLUE),
+        ("A09", "Security Logging and Alerting Failures", "Mismo puesto (9), foco en Alertas", "Detección temprana", C_BLUE),
+        ("A10", "Mishandling of Exceptional Conditions", "NUEVA en 2025 (24 debilidades)", "Falla abierta / Rollback", C_AMBER)
+    ]
+
+    for row_idx, (code, cat, change, nature, tag_col) in enumerate(data, start=1):
+        for col_idx, text in enumerate([code, cat, change, nature]):
+            cell = tbl.cell(row_idx, col_idx)
+            cell.fill.solid()
+            cell.fill.fore_color.rgb = C_CARD
+            p = cell.text_frame.paragraphs[0]
+            p.text = text
+            p.font.size = Pt(9.5)
+            p.font.color.rgb = tag_col if col_idx in [0, 3] else C_TEXT
+            if col_idx == 0:
+                p.font.bold = True
 
     # =========================================================================
-    # SLIDE 5: ORADOR 2 - A01 BROKEN ACCESS CONTROL
+    # SLIDE 5: A01 BROKEN ACCESS CONTROL (HERO SPLIT 60/40 CON EJEMPLO IDOR)
     # =========================================================================
     s5 = prs.slides.add_slide(blank_layout)
-    apply_bg(s5)
-    add_header(s5, "A01: Control de Acceso Defectuoso (Broken Access Control)", "Puesto #1 en OWASP 2025", "Orador 2", COLOR_CRIMSON)
+    bg(s5)
+    slide_header(s5, "A01: Control de Acceso Defectuoso (Broken Access Control)", "Puesto #1 — Riesgo Máximo", C_CRIMSON)
 
-    add_card(s5, 0.8, 1.8, 3.7, 5.0, "Contexto y Alcance", [
-        "Mantiene el 1er puesto de forma absoluta.",
-        "El 100% de las aplicaciones analizadas tuvo alguna vulnerabilidad de control de acceso.",
-        "Ocurre cuando un usuario puede actuar fuera de los límites de sus permisos asignados.",
-        "En 2025 absorbe SSRF (Server-Side Request Forgery)."
-    ], "100% de Incidencia", COLOR_CRIMSON)
+    # Left: Explanation (60%)
+    l_card = s5.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(6.8), Inches(4.9))
+    l_card.fill.solid()
+    l_card.fill.fore_color.rgb = C_CARD
+    l_card.line.color.rgb = C_BORDER
+    tf_l = l_card.text_frame
+    tf_l.margin_left = Inches(0.35)
+    tf_l.margin_top = Inches(0.3)
+    p_lt = tf_l.paragraphs[0]
+    p_lt.text = "¿POR QUÉ SIGUE LIDERANDO EL TOP 10?"
+    p_lt.font.size = Pt(13)
+    p_lt.font.bold = True
+    p_lt.font.color.rgb = C_CRIMSON
+    p_lt.space_after = Pt(10)
 
-    add_card(s5, 4.8, 1.8, 3.7, 5.0, "Causas Frecuentes & IDOR", [
-        "Insecure Direct Object References (IDOR): cambiar un ID en la URL (?acct=102).",
-        "APIs sin validación en verbos POST, PUT y DELETE.",
-        "Violación del Principio de Mínimo Privilegio.",
-        "Tokens JWT o cookies manipuladas para elevar privilegios.",
-        "Controles delegados únicamente al navegador/frontend."
-    ], "Vectores Típicos", COLOR_AMBER)
+    bullets_a01 = [
+        "Prevalencia Absoluta: El 100% de las aplicaciones analizadas registró fallas en esta categoría.",
+        "Absorción de SSRF: En 2025, Server-Side Request Forgery se integró como defecto de acceso.",
+        "Causa Fundamental: Falta de validación en los verbos POST, PUT y DELETE en APIs REST.",
+        "El Error Clave: Confiar ciegamente en comprobaciones hechas en el navegador o enviar identificadores directos.",
+        "Principio de Menor Privilegio: Si no se deniega el acceso por defecto, la aplicación es vulnerable."
+    ]
+    for b in bullets_a01:
+        p = tf_l.add_paragraph()
+        p.text = f"• {b}"
+        p.font.size = Pt(11.5)
+        p.font.color.rgb = C_TEXT
+        p.space_after = Pt(8)
 
-    add_card(s5, 4.8 + 4.0, 1.8, 3.7, 5.0, "Estrategia de Mitigación", [
-        "Validación estricta de propiedad de recursos en el backend (RBAC / ABAC).",
-        "Deshabilitar navegación de directorios y forzar denegación por defecto.",
-        "Pruebas unitarias e integración de control de acceso en pipelines CI/CD.",
-        "Registro de auditoría ante cualquier intento de elevación de privilegios."
-    ], "Defensa en Profundidad", COLOR_EMERALD)
+    # Right: IDOR Code / Request breakdown (40%)
+    r_card = s5.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(7.9), Inches(1.8), Inches(4.6), Inches(4.9))
+    r_card.fill.solid()
+    r_card.fill.fore_color.rgb = C_CODE_BG
+    r_card.line.color.rgb = C_CRIMSON
+    r_card.line.width = Pt(1)
+    tf_r = r_card.text_frame
+    tf_r.margin_left = Inches(0.3)
+    tf_r.margin_top = Inches(0.25)
+    p_rt = tf_r.paragraphs[0]
+    p_rt.text = "ANATOMÍA DE UN ATAQUE IDOR"
+    p_rt.font.size = Pt(12)
+    p_rt.font.bold = True
+    p_rt.font.color.rgb = C_AMBER
+    p_rt.space_after = Pt(8)
+
+    code_text = (
+        "// 1. Petición del Cliente Manipulada:\n"
+        "GET /api/v1/cuenta?acct=102 HTTP/1.1\n"
+        "Cookie: user_session_id=101 (Juan)\n\n"
+        "// 2. Falla del Backend Vulnerable:\n"
+        "const id = req.query.acct; // Lee 102 directo\n"
+        "const data = db.find({ id }); // ¡Sin check!\n"
+        "return res.json(data); // HTTP 200 (Fuga)\n\n"
+        "// 3. Mitigación Obligatoria (RBAC):\n"
+        "if (req.user.acctId !== requestedId) {\n"
+        "  return res.status(403).json({\n"
+        "    error: 'Acceso Denegado'\n"
+        "  });\n"
+        "}"
+    )
+    p_code = tf_r.add_paragraph()
+    p_code.text = code_text
+    p_code.font.size = Pt(10.5)
+    p_code.font.color.rgb = C_CYAN
 
     # =========================================================================
-    # SLIDE 6: ORADOR 2 - A02 SECURITY MISCONFIGURATION
+    # SLIDE 6: A02 CONFIGURACIÓN INCORRECTA (CONTRASTE CONFIG VS CÓDIGO)
     # =========================================================================
     s6 = prs.slides.add_slide(blank_layout)
-    apply_bg(s6)
-    add_header(s6, "A02: Configuración de Seguridad Incorrecta", "Ascenso al Puesto #2", "Orador 2", COLOR_CRIMSON)
+    bg(s6)
+    slide_header(s6, "A02: Configuración de Seguridad Incorrecta", "Ascenso al Puesto #2 — Falla Estructural", C_CRIMSON)
 
-    add_card(s6, 0.8, 1.8, 3.7, 5.0, "¿Por qué subió al Puesto #2?", [
-        "Estaba en el puesto #5 en 2021; su escalada refleja la complejidad cloud.",
-        "100% de aplicaciones evaluadas tenían configuraciones inseguras.",
-        "El comportamiento real del sistema depende más de su configuración que de su código fuente.",
-        "Los entornos de nube multiplican la posibilidad de configuraciones erróneas."
-    ], "Falla Estructural", COLOR_CRIMSON)
+    # 3 Cards: Por qué subió, Vectores, Solución Hardening
+    c_a02_1 = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(3.7), Inches(4.9))
+    c_a02_1.fill.solid()
+    c_a02_1.fill.fore_color.rgb = C_CARD
+    c_a02_1.line.color.rgb = C_BORDER
+    tf = c_a02_1.text_frame
+    tf.margin_left = Inches(0.25)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "EL SALTO DEL PUESTO 5 AL 2"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_CRIMSON
+    p.space_after = Pt(8)
+    items1 = [
+        "100% de prevalencia en los sistemas analizados.",
+        "Cambio de paradigma: El comportamiento real depende más de la infraestructura y cloud que del código.",
+        "La proliferación de servicios nube y microservicios multiplica los errores humanos en settings."
+    ]
+    for it in items1:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(6)
 
-    add_card(s6, 4.8, 1.8, 3.7, 5.0, "Causas Frecuentes", [
-        "Cuentas y contraseñas predeterminadas sin modificar.",
-        "Puertos, consolas de administración o páginas de prueba habilitadas.",
-        "Headers de seguridad HTTP ausentes (CSP, HSTS, X-Content-Type).",
-        "Permisos excesivos en buckets y servicios cloud.",
-        "Mensajes de error verbosos que exponen stack traces y versiones."
-    ], "Errores Comunes", COLOR_AMBER)
+    c_a02_2 = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(4.8), Inches(1.8), Inches(3.7), Inches(4.9))
+    c_a02_2.fill.solid()
+    c_a02_2.fill.fore_color.rgb = C_CARD
+    c_a02_2.line.color.rgb = C_BORDER
+    tf = c_a02_2.text_frame
+    tf.margin_left = Inches(0.25)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "ERRORES MÁS FRECUENTES"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_AMBER
+    p.space_after = Pt(8)
+    items2 = [
+        "Cuentas y claves por defecto jamás modificadas.",
+        "Consolas de administración o endpoints de prueba habilitados en producción.",
+        "Ausencia de cabeceras HTTP de seguridad (CSP, HSTS, X-Content-Type).",
+        "Stack traces y versiones de frameworks expuestas en mensajes de error públicos."
+    ]
+    for it in items2:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(6)
 
-    add_card(s6, 8.8, 1.8, 3.7, 5.0, "Mitigación y Detección", [
-        "Guías de endurecimiento (Hardening) basadas en estándares NIST y CIS.",
-        "Infraestructura como Código (IaC) auditada de forma reproducible.",
-        "Deshabilitar características y servicios innecesarios en imágenes Docker.",
-        "Verificaciones automatizadas comparando contra una línea base segura."
-    ], "Línea Base Segura", COLOR_EMERALD)
+    c_a02_3 = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(8.8), Inches(1.8), Inches(3.7), Inches(4.9))
+    c_a02_3.fill.solid()
+    c_a02_3.fill.fore_color.rgb = C_CARD
+    c_a02_3.line.color.rgb = C_BORDER
+    tf = c_a02_3.text_frame
+    tf.margin_left = Inches(0.25)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "HARDENING Y MITIGACIÓN"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_EMERALD
+    p.space_after = Pt(8)
+    items3 = [
+        "Adopción de guías de endurecimiento oficiales de NIST y CIS Benchmarks.",
+        "Infraestructura como Código (IaC) inmutable y auditada antes del deploy.",
+        "Deshabilitar funciones y módulos innecesarios en imágenes de contenedores.",
+        "Auditoría continua automatizada comparando contra líneas base."
+    ]
+    for it in items3:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(6)
 
     # =========================================================================
-    # SLIDE 7: ORADOR 3 - A03 SOFTWARE SUPPLY CHAIN FAILURES
+    # SLIDE 7: A03 SUPPLY CHAIN FAILURES (CASE STUDY SOLARWINDS & SBOM)
     # =========================================================================
     s7 = prs.slides.add_slide(blank_layout)
-    apply_bg(s7)
-    add_header(s7, "A03: Fallas en la Cadena de Suministro de Software", "Nueva Categoría 2025 (#3)", "Orador 3", COLOR_AMBER)
+    bg(s7)
+    slide_header(s7, "A03: Fallas en la Cadena de Suministro de Software", "Nueva Categoría 2025 (#3)", C_AMBER)
 
-    add_card(s7, 0.8, 1.8, 3.7, 5.0, "Evolución de la Amenaza", [
-        "Reemplaza y amplía 'componentes vulnerables y desactualizados'.",
-        "Abarca todo el ciclo: herramientas de build, repositorios, dependencias y CI/CD.",
-        "Top #1 en la votación comunitaria de expertos por su impacto devastador.",
-        "Los atacantes ya no atacan tu app: atacan las dependencias de tus dependencias."
-    ], "Nueva Categoría", COLOR_AMBER)
+    # Top Half: Case Study Banner
+    top_c = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(11.7), Inches(2.2))
+    top_c.fill.solid()
+    top_c.fill.fore_color.rgb = C_CARD_ALT
+    top_c.line.color.rgb = C_AMBER
+    top_c.line.width = Pt(1)
+    tf_top = top_c.text_frame
+    tf_top.margin_left = Inches(0.35)
+    tf_top.margin_top = Inches(0.2)
+    p_t = tf_top.paragraphs[0]
+    p_t.text = "CASO EMBLEMÁTICO: ATAQUE A SOLARWINDS (2019 - 2020)"
+    p_t.font.size = Pt(13)
+    p_t.font.bold = True
+    p_t.font.color.rgb = C_AMBER
+    p_t.space_after = Pt(6)
 
-    add_card(s7, 4.8, 1.8, 3.7, 5.0, "Caso Real: SolarWinds (2019)", [
-        "Atacantes comprometieron el pipeline de compilación de la empresa.",
-        "El malware se distribuyó firmado y certificado a clientes legítimos.",
-        "Afectó a más de 18.000 organizaciones globales, incluyendo el gobierno de EEUU y Microsoft.",
-        "Demostró que una sola dependencia comprometida vulnera todo un ecosistema."
-    ], "Impacto Sistémico", COLOR_CRIMSON)
+    p_sol = tf_top.add_paragraph()
+    p_sol.text = "Los atacantes no vulneraron la aplicación final del cliente: comprometieron el pipeline de compilación (build system) del proveedor. El software malicioso fue firmado con certificados legítimos y distribuido como actualización oficial, infectando a más de 18.000 organizaciones (incluyendo ministerios de EEUU y gigantes tecnológicos)."
+    p_sol.font.size = Pt(11.5)
+    p_sol.font.color.rgb = C_WHITE
+    p_sol.line_spacing = 1.25
 
-    add_card(s7, 8.8, 1.8, 3.7, 5.0, "Controles y Mitigación", [
-        "Generación y monitoreo continuo de SBOM (Software Bill of Materials).",
-        "Herramientas activas: OWASP Dependency-Track y Dependency-Check.",
-        "Consultas periódicas a bases de vulnerabilidades (NVD y OSV).",
-        "Segregación estricta de funciones y protección del pipeline de CI/CD."
-    ], "Visibilidad de Código", COLOR_EMERALD)
+    # Bottom Half: 2 Cards (Causas vs Soluciones SBOM)
+    b1 = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(4.3), Inches(5.7), Inches(2.5))
+    b1.fill.solid()
+    b1.fill.fore_color.rgb = C_CARD
+    b1.line.color.rgb = C_BORDER
+    tf = b1.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.2)
+    p = tf.paragraphs[0]
+    p.text = "Puntos Ciegos de la Cadena de Suministro"
+    p.font.size = Pt(12)
+    p.font.bold = True
+    p.font.color.rgb = C_CRIMSON
+    for item in [
+        "No escanear dependencias transitivas ('las dependencias de las dependencias').",
+        "Pipelines de CI/CD con menos protección que los servidores de producción.",
+        "Parches aplicados con meses de demora tras publicarse los CVEs."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {item}"
+        pi.font.size = Pt(10.5)
+        pi.font.color.rgb = C_TEXT
+
+    b2 = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(6.8), Inches(4.3), Inches(5.7), Inches(2.5))
+    b2.fill.solid()
+    b2.fill.fore_color.rgb = C_CARD
+    b2.line.color.rgb = C_BORDER
+    tf = b2.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.2)
+    p = tf.paragraphs[0]
+    p.text = "Controles Defensivos Requeridos"
+    p.font.size = Pt(12)
+    p.font.bold = True
+    p.font.color.rgb = C_EMERALD
+    for item in [
+        "SBOM (Software Bill of Materials) automatizado en cada release.",
+        "OWASP Dependency-Track y Dependency-Check integrados en CI/CD.",
+        "Monitoreo continuo contra bases públicas de vulnerabilidades (NVD y OSV)."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {item}"
+        pi.font.size = Pt(10.5)
+        pi.font.color.rgb = C_TEXT
 
     # =========================================================================
-    # SLIDE 8: ORADOR 3 - A04 CRYPTOGRAPHIC FAILURES
+    # SLIDE 8: A04 FALLAS CRIPTOGRÁFICAS (CONTRASTE INSEGURO VS MODERNO)
     # =========================================================================
     s8 = prs.slides.add_slide(blank_layout)
-    apply_bg(s8)
-    add_header(s8, "A04: Fallas Criptográficas", "Puesto #4 en OWASP 2025", "Orador 3", COLOR_AMBER)
+    bg(s8)
+    slide_header(s8, "A04: Fallas Criptográficas", "Puesto #4 — Protección de Datos Sensibles", C_BLUE)
 
-    add_card(s8, 0.8, 1.8, 3.7, 5.0, "Alcance del Problema", [
-        "Anteriormente conocida como Exposición de Datos Sensibles.",
-        "Agrupa problemas de ausencia de cifrado, cifrado débil o filtración de claves.",
-        "Punto crítico: generadores de números pseudoaleatorios inadecuados.",
-        "Resultado habitual: compromiso total de confidencialidad de datos."
-    ], "Protección de Datos", COLOR_AMBER)
+    # 2 Comparison Columns
+    col_bad = s8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(5.7), Inches(4.9))
+    col_bad.fill.solid()
+    col_bad.fill.fore_color.rgb = C_CARD
+    col_bad.line.color.rgb = C_CRIMSON
+    col_bad.line.width = Pt(1)
+    tf = col_bad.text_frame
+    tf.margin_left = Inches(0.35)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "PRÁCTICAS INSEGURAS COMUNES"
+    p.font.size = Pt(14)
+    p.font.bold = True
+    p.font.color.rgb = C_CRIMSON
+    p.space_after = Pt(10)
 
-    add_card(s8, 4.8, 1.8, 3.7, 5.0, "Causas Frecuentes", [
-        "Uso de algoritmos obsoletos o rotos (ej: MD5, SHA1).",
-        "Tráfico en texto plano sin forzar HTTPS/TLS en toda la aplicación.",
-        "Almacenamiento de contraseñas con algoritmos simples o sin salt.",
-        "Claves de cifrado harcodeadas en repositorios de Git públicos o privados.",
-        "Falta de políticas de rotación de claves criptográficas."
-    ], "Errores Clave", COLOR_CRIMSON)
+    for item in [
+        "Uso de algoritmos obsoletos o quebrados (MD5, SHA1, DES).",
+        "Generadores de números pseudoaleatorios inadecuados (predictibilidad en tokens de sesión o reset de contraseña).",
+        "Tráfico sensible transmitido en HTTP texto plano sin forzar TLS.",
+        "Contraseñas hasheadas sin salt o con algoritmos ultrarrápidos vulnerables a fuerza bruta GPU.",
+        "Claves y secretos guardados en código fuente o repositorios de control de versiones."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {item}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(6)
 
-    add_card(s8, 8.8, 1.8, 3.7, 5.0, "Recomendaciones Técnicas", [
-        "TLS configurado y forzado en todas las rutas con certificados válidos.",
-        "Clasificación formal de datos según su sensibilidad en reposo y en tránsito.",
-        "Funciones de hash diseñadas para contraseñas: Argon2, bcrypt o PBKDF2.",
-        "Gestores de secretos corporativos (HashiCorp Vault, AWS Secrets Manager)."
-    ], "Buenas Prácticas", COLOR_EMERALD)
+    col_good = s8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(6.8), Inches(1.8), Inches(5.7), Inches(4.9))
+    col_good.fill.solid()
+    col_good.fill.fore_color.rgb = C_CARD
+    col_good.line.color.rgb = C_EMERALD
+    col_good.line.width = Pt(1)
+    tf = col_good.text_frame
+    tf.margin_left = Inches(0.35)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "ESTÁNDAR CRIPTOGRÁFICO EXIGIDO"
+    p.font.size = Pt(14)
+    p.font.bold = True
+    p.font.color.rgb = C_EMERALD
+    p.space_after = Pt(10)
+
+    for item in [
+        "Forzar TLS 1.3 en el 100% de los endpoints con cabecera HSTS activa.",
+        "Generadores de números pseudoaleatorios criptográficamente seguros (CSPRNG).",
+        "Funciones de derivación de claves diseñadas para passwords: Argon2id, bcrypt o PBKDF2.",
+        "Gestores de secretos dedicados (HashiCorp Vault, AWS KMS) con rotación automática.",
+        "Clasificación formal de datos según su sensibilidad en tránsito y reposo."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {item}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(6)
 
     # =========================================================================
-    # SLIDE 9: ORADOR 4 - A05 INJECTION
+    # SLIDE 9: A05 INJECTION (HISTÓRICO DE CVES & PREPARED STATEMENTS)
     # =========================================================================
     s9 = prs.slides.add_slide(blank_layout)
-    apply_bg(s9)
-    add_header(s9, "A05: Inyección (SQL Injection & XSS)", "Puesto #5 — Récord de CVEs", "Orador 4", COLOR_PURPLE)
+    bg(s9)
+    slide_header(s9, "A05: Inyección (SQLi, XSS y Comandos)", "Puesto #5 — Mayor Volumen de CVEs", C_PURPLE)
 
-    add_card(s9, 0.8, 1.8, 3.7, 5.0, "Magnitud de la Inyección", [
-        "Mayor volumen histórico de CVEs: más de 44.000 vulnerabilidades reportadas.",
-        "XSS (Cross-Site Scripting): Alta frecuencia, más de 30.000 casos.",
-        "SQLi (Inyección SQL): Menor frecuencia pero con impacto devastador (14.000 casos).",
-        "Ocurre cuando datos no confiables se ejecutan como instrucciones de código."
-    ], "+44k CVEs", COLOR_PURPLE)
+    # Left: +44k CVEs Stat Box + Explanation
+    left_b = s9.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(5.0), Inches(4.9))
+    left_b.fill.solid()
+    left_b.fill.fore_color.rgb = C_CARD
+    left_b.line.color.rgb = C_BORDER
+    tf = left_b.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.3)
 
-    add_card(s9, 4.8, 1.8, 3.7, 5.0, "Causa Raíz: Concatenación", [
-        "Construcción de consultas SQL mediante concatenación directa de strings.",
-        "Ejemplo: 'SELECT * FROM users WHERE user = ' + input + ...",
-        "Payloads booleanos como ' OR '1'='1 alteran el AST del intérprete SQL.",
-        "Se anulan las condiciones de autenticación, otorgando acceso como administrador."
-    ], "Mecanismo del Ataque", COLOR_CRIMSON)
+    p_cve = tf.paragraphs[0]
+    p_cve.text = "+44.000"
+    p_cve.font.size = Pt(38)
+    p_cve.font.bold = True
+    p_cve.font.color.rgb = C_PURPLE
 
-    add_card(s9, 8.8, 1.8, 3.7, 5.0, "Solución: Prepared Statements", [
-        "Consultas parametrizadas obligatorias (los parámetros viajan como datos, no código).",
-        "Validación y saneamiento de entradas con esquemas estrictos (Zod, Joi).",
-        "Integración de análisis estático y dinámico (SAST, DAST, IAST) en CI/CD.",
-        "Evitar consultas 'raw' dinámicas incluso al utilizar frameworks u ORMs."
-    ], "Mitigación Definitiva", COLOR_EMERALD)
+    p_sub = tf.add_paragraph()
+    p_sub.text = "CVEs Registrados Históricamente"
+    p_sub.font.size = Pt(12)
+    p_sub.font.bold = True
+    p_sub.font.color.rgb = C_WHITE
+    p_sub.space_after = Pt(12)
+
+    for it in [
+        "XSS (Cross-Site Scripting): Alta frecuencia, baja barrera (+30.000 registros).",
+        "SQL Injection: Menor frecuencia pero con impacto de compromiso total (+14.000 registros).",
+        "Causa Raíz: Enviar datos no confiables directamente a un intérprete (SQL, shell, DOM) sin separar código de datos.",
+        "Variantes: SQL, NoSQL, comandos OS, LDAP y lenguajes de expresión."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(10.8)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(6)
+
+    # Right: Code Diff / Visual Breakdown
+    right_b = s9.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(6.1), Inches(1.8), Inches(6.4), Inches(4.9))
+    right_b.fill.solid()
+    right_b.fill.fore_color.rgb = C_CODE_BG
+    right_b.line.color.rgb = C_BORDER
+    tf = right_b.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.25)
+
+    p = tf.paragraphs[0]
+    p.text = "CONCATENACIÓN INSEGURA vs PREPARED STATEMENTS"
+    p.font.size = Pt(12)
+    p.font.bold = True
+    p.font.color.rgb = C_CYAN
+    p.space_after = Pt(10)
+
+    sqli_code = (
+        "// ❌ CÓDIGO VULNERABLE (Concatenación Dinámica):\n"
+        "const query = 'SELECT * FROM users WHERE user = \\'' \n"
+        "              + userInput + '\\' AND pass = \\'' + passInput + '\\'';\n\n"
+        "// Si el atacante envía: ' OR '1'='1\n"
+        "// La consulta se transforma en:\n"
+        "// WHERE user = '' OR '1'='1' (¡Verdadero para todas las filas!)\n\n"
+        "// --------------------------------------------------\n\n"
+        "// ✅ CÓDIGO SEGURO (Sentencia Parametrizada):\n"
+        "const sql = 'SELECT * FROM users WHERE user = ? AND pass = ?';\n"
+        "const [rows] = await db.execute(sql, [userInput, passInput]);\n\n"
+        "// El motor compila el árbol sintáctico ANTES de recibir los datos.\n"
+        "// El payload es tratado como texto literal inofensivo."
+    )
+    p_c = tf.add_paragraph()
+    p_c.text = sqli_code
+    p_c.font.size = Pt(10)
+    p_c.font.color.rgb = C_TEXT
 
     # =========================================================================
-    # SLIDE 10: ORADOR 4 - A06 INSECURE DESIGN
+    # SLIDE 10: A06 INSECURE DESIGN (CASO CINE & THREAT MODELING)
     # =========================================================================
     s10 = prs.slides.add_slide(blank_layout)
-    apply_bg(s10)
-    add_header(s10, "A06: Diseño Inseguro (Insecure Design)", "Puesto #6 en OWASP 2025", "Orador 4", COLOR_PURPLE)
+    bg(s10)
+    slide_header(s10, "A06: Diseño Inseguro (Insecure Design)", "Puesto #6 — Principio 'Conceptos > Código'", C_PURPLE)
 
-    add_card(s10, 0.8, 1.8, 3.7, 5.0, "Diseño vs. Implementación", [
-        "Principio clave de OWASP: Separar el diseño de la implementación.",
-        "Un diseño inseguro no se soluciona con una implementación perfecta.",
-        "Si los controles no fueron concebidos desde la arquitectura, el código fallará.",
-        "Diferencia: Un bug es un error de código; una falla de diseño es una ausencia de lógica."
-    ], "Conceptos > Código", COLOR_PURPLE)
+    # Top Quote
+    q_card = s10.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(11.7), Inches(1.3))
+    q_card.fill.solid()
+    q_card.fill.fore_color.rgb = C_CARD_ALT
+    q_card.line.color.rgb = C_PURPLE
+    q_card.line.width = Pt(1)
+    tf = q_card.text_frame
+    tf.margin_left = Inches(0.4)
+    tf.margin_top = Inches(0.2)
+    p = tf.paragraphs[0]
+    p.text = "«Un diseño inseguro no se soluciona con una implementación perfecta de código.»"
+    p.font.size = Pt(16)
+    p.font.bold = True
+    p.font.color.rgb = C_WHITE
+    p_sub = tf.add_paragraph()
+    p_sub.text = "Si los controles de seguridad nunca fueron concebidos en la arquitectura, la ausencia de bugs no evitará el ataque."
+    p_sub.font.size = Pt(11)
+    p_sub.font.color.rgb = C_CYAN
+    p_sub.space_before = Pt(4)
 
-    add_card(s10, 4.8, 1.8, 3.7, 5.0, "Ejemplo Real: Lógica de Negocio", [
-        "Caso del sistema de cine: descuentos grupales a partir de 15 personas.",
-        "Atacante reserva 600 asientos en todas las salas con pocas peticiones.",
-        "Causa un daño financiero inmenso sin romper ninguna validación técnica de código.",
-        "Falla de diseño: no contemplar límites de tasa o retención temporal por usuario."
-    ], "Falla de Lógica", COLOR_CRIMSON)
+    # 2 Bottom Cards: Ejemplo Cine vs Threat Modeling
+    b_cine = s10.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(3.4), Inches(5.7), Inches(3.3))
+    b_cine.fill.solid()
+    b_cine.fill.fore_color.rgb = C_CARD
+    b_cine.line.color.rgb = C_BORDER
+    tf = b_cine.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "Ejemplo Real: Lógica de Reserva en Cines"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_AMBER
+    p.space_after = Pt(8)
+    for it in [
+        "Descuento grupal habilitado a partir de 15 personas.",
+        "Un atacante reserva 600 asientos en todas las funciones con pocas peticiones legítimas.",
+        "Provoca una pérdida millonaria al bloquear ventas genuinas.",
+        "La implementación técnica no tenía ningún bug de código; la falla fue puramente de diseño del negocio."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
 
-    add_card(s10, 8.8, 1.8, 3.7, 5.0, "Enfoque Preventivo", [
-        "Modelado de Amenazas (Threat Modeling) en las fases tempranas del ciclo.",
-        "Requerimientos de seguridad explícitos en las historias de usuario.",
-        "Diseño de casos de abuso (Abuse Cases) junto a los casos de uso habituales.",
-        "Implementación del marco de madurez OWASP SAMM."
-    ], "Arquitectura Segura", COLOR_EMERALD)
+    b_sol = s10.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(6.8), Inches(3.4), Inches(5.7), Inches(3.3))
+    b_sol.fill.solid()
+    b_sol.fill.fore_color.rgb = C_CARD
+    b_sol.line.color.rgb = C_BORDER
+    tf = b_sol.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "Estrategias de Diseño Seguro"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_EMERALD
+    p.space_after = Pt(8)
+    for it in [
+        "Modelado de Amenazas (Threat Modeling) previo al inicio de desarrollo.",
+        "Definición explícita de Casos de Abuso (Abuse Cases) junto a las historias de usuario.",
+        "Límites de tasa de negocio (Rate Limiting en reservas, no solo en endpoints).",
+        "Adopción del modelo de madurez de software seguro OWASP SAMM."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
 
     # =========================================================================
-    # SLIDE 11: ORADOR 5 - A07 & A08
+    # SLIDE 11: A07 AUTHENTICATION & A08 INTEGRITY (SPLIT ASIMÉTRICO)
     # =========================================================================
     s11 = prs.slides.add_slide(blank_layout)
-    apply_bg(s11)
-    add_header(s11, "A07: Autenticación & A08: Integridad de Software", "Puestos #7 y #8", "Orador 5", COLOR_EMERALD)
+    bg(s11)
+    slide_header(s11, "A07: Autenticación & A08: Integridad de Software y Datos", "Puestos #7 y #8", C_EMERALD)
 
-    add_card(s11, 0.8, 1.8, 5.7, 5.0, "A07: Fallas de Autenticación", [
-        "Ocurre cuando el sistema reconoce erróneamente a un usuario ilegítimo.",
-        "Ataques típicos: Credential Stuffing y Fuerza Bruta automatizada.",
-        "El problema humano: de 'Winter2025' a 'Winter2026' tras filtraciones.",
-        "Sin rate limiting, el backend opera como un 'oráculo' para el botnet.",
-        "Mitigación: Pautas NIST 800-63b, bloqueo por intentos y MFA obligatorio."
-    ], "Puesto #7", COLOR_AMBER)
+    c_a07 = s11.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(5.7), Inches(4.9))
+    c_a07.fill.solid()
+    c_a07.fill.fore_color.rgb = C_CARD
+    c_a07.line.color.rgb = C_BORDER
+    tf = c_a07.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "A07: FALLAS DE AUTENTICACIÓN"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_AMBER
+    p.space_after = Pt(10)
 
-    add_card(s11, 6.8, 1.8, 5.7, 5.0, "A08: Fallas de Integridad de Software y Datos", [
-        "Asumir que código o artefactos externos son confiables sin verificación.",
-        "Pipelines que descargan módulos sin verificar firma criptográfica.",
-        "Actualizaciones automáticas aplicadas a ciegas.",
-        "Deserialización insegura: manipulación de objetos para ejecutar código remoto.",
-        "Mitigación: Firmas digitales, repositorios espejo auditados y escáneres estáticos."
-    ], "Puesto #8", COLOR_EMERALD)
+    for it in [
+        "36 grupos de debilidades asociadas en el reporte 2025.",
+        "Ataques de Fuerza Bruta y Credential Stuffing automatizados.",
+        "Patrón de contraseñas predecibles: de 'Winter2025' a 'Winter2026!' tras filtraciones.",
+        "Sin bloqueo progresivo, el servidor opera como un 'oráculo' que valida credenciales robadas.",
+        "Mitigación: Pautas NIST 800-63b, retrasos exponenciales y MFA (Autenticación Multifactor) obligatorio."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(8)
+
+    c_a08 = s11.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(6.8), Inches(1.8), Inches(5.7), Inches(4.9))
+    c_a08.fill.solid()
+    c_a08.fill.fore_color.rgb = C_CARD
+    c_a08.line.color.rgb = C_BORDER
+    tf = c_a08.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "A08: INTEGRIDAD DE SOFTWARE O DATOS"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_BLUE
+    p.space_after = Pt(10)
+
+    for it in [
+        "Asumir que código o artefactos externos son seguros sin validación criptográfica.",
+        "Plugins o módulos importados de CDN no confiables.",
+        "Actualizaciones automáticas aplicadas sin verificar firmas digitales.",
+        "Deserialización Insegura: Modificación de objetos serializados que permite ejecución de código remoto (RCE).",
+        "Mitigación: Firmas digitales, verificación de hashes de integridad y escáneres estáticos de deserialización."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(8)
 
     # =========================================================================
-    # SLIDE 12: ORADOR 5 - A09 & A10
+    # SLIDE 12: A09 LOGGING & A10 CONDICIONES EXCEPCIONALES (NOVEDAD 2025)
     # =========================================================================
     s12 = prs.slides.add_slide(blank_layout)
-    apply_bg(s12)
-    add_header(s12, "A09: Registro y Alertas & A10: Condiciones Excepcionales", "Puestos #9 y #10 (Novedad)", "Orador 5", COLOR_EMERALD)
+    bg(s12)
+    slide_header(s12, "A09: Fallas de Registro y Alertas & A10: Condiciones Excepcionales", "Puestos #9 y #10 (Nueva Categoría)", C_EMERALD)
 
-    add_card(s12, 0.8, 1.8, 5.7, 5.0, "A09: Fallas de Registro y Alertas", [
-        "Evolución clave: Pasó de llamarse 'monitoreo' a 'alertas'.",
-        "Tener logs sin alertas no sirve: ataques persisten años inadvertidos.",
-        "Caso Real: Filtración de aseguradora de salud infantil durante 7 años (3.5M de niños).",
-        "Mitigación: Pila ELK, honeytokens (trampas con cero falsos positivos) y plan NIST 800-61."
-    ], "Puesto #9", COLOR_BLUE)
+    c_a09 = s12.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(5.7), Inches(4.9))
+    c_a09.fill.solid()
+    c_a09.fill.fore_color.rgb = C_CARD
+    c_a09.line.color.rgb = C_BORDER
+    tf = c_a09.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "A09: DE 'MONITOREO' A 'ALERTAS'"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_BLUE
+    p.space_after = Pt(10)
 
-    add_card(s12, 6.8, 1.8, 5.7, 5.0, "A10: Mal Manejo de Condiciones Excepcionales", [
-        "NUEVA CATEGORÍA EN 2025: 24 debilidades enfocadas en errores.",
-        "Falla abierta: el sistema falla dejando datos o permisos expuestos.",
-        "Ejemplo: Transacción bancaria en 3 pasos que no ejecuta rollback ante cortes.",
-        "Mitigación: Manejo centralizado global de excepciones, idempotencia y límites de cuota."
-    ], "Puesto #10 (Nueva)", COLOR_CRIMSON)
+    for it in [
+        "Un registro pasivo no detiene ataques: si no hay alertas en tiempo real, las intrusiones pasan inadvertidas.",
+        "Caso Real: Aseguradora de salud infantil con filtración no detectada durante más de 7 años (3.5 millones de niños expuestos).",
+        "Honeytokens: Trampas con cebos sintéticos que disparan alertas con tasa casi cero de falsos positivos.",
+        "Herramientas: Pila ELK (Elasticsearch, Logstash, Kibana) y planes de respuesta a incidentes NIST 800-61."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(8)
+
+    c_a10 = s12.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(6.8), Inches(1.8), Inches(5.7), Inches(4.9))
+    c_a10.fill.solid()
+    c_a10.fill.fore_color.rgb = C_CARD
+    c_a10.line.color.rgb = C_BORDER
+    tf = c_a10.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "A10: MAL MANEJO DE CONDICIONES EXCEPCIONALES (NUEVA)"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_CRIMSON
+    p.space_after = Pt(10)
+
+    for it in [
+        "Nueva categoría en 2025: 24 debilidades orientadas a fallas lógicas y errores no controlados.",
+        "Falla Abierta: Cuando el sistema ante una excepción queda en un estado inesperado que otorga acceso.",
+        "Caso Transaccional: Débito en origen, crédito en destino y log. Si se interrumpe a mitad de camino sin rollback, se vulnera la consistencia financiera.",
+        "Mitigación: Manejadores globales centralizados de excepciones, transacciones atómicas y límites de tasa/cuotas."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(8)
 
     # =========================================================================
-    # SLIDE 13: CONCLUSIÓN & DEMO
+    # SLIDE 13: CONCLUSIÓN & DEMOSTRACIÓN DEL SIMULADOR WEB
     # =========================================================================
     s13 = prs.slides.add_slide(blank_layout)
-    apply_bg(s13)
-    add_header(s13, "Conclusiones del Estudio & Demostración Práctica", "Cierre y Laboratorio en Vivo", "Equipo Completo", COLOR_CYAN)
+    bg(s13)
+    slide_header(s13, "Conclusiones del Estudio & Demostración Práctica en Vivo", "Cierre del Trabajo Práctico", C_CYAN)
 
-    add_card(s13, 0.8, 1.8, 5.7, 5.0, "Conclusiones de la Monografía", [
-        "1. La seguridad no se añade al final: debe ser parte del diseño inicial.",
-        "2. El Top 10:2025 destaca que el código bien escrito puede ser vulnerado por infraestructura y cadena de suministro.",
-        "3. La automatización ofensiva exige automatización defensiva (SAST, DAST, SBOM y MFA).",
-        "4. Enfoque integral: Diseño Seguro + Automatización CI/CD + Monitoreo con Alertas."
-    ], "Pilares Clave", COLOR_CYAN)
+    c_fin = s13.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(5.7), Inches(4.9))
+    c_fin.fill.solid()
+    c_fin.fill.fore_color.rgb = C_CARD
+    c_fin.line.color.rgb = C_BORDER
+    tf = c_fin.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "CONCLUSIONES DE LA INVESTIGACIÓN"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_CYAN
+    p.space_after = Pt(10)
 
-    add_card(s13, 6.8, 1.8, 5.7, 5.0, "Demostración del Simulador Web (SeguridadTP)", [
-        "Laboratorio interactivo desarrollado para acompañar la monografía:",
-        "• Demo 1: Explotación y mitigación de IDOR (A01 - Broken Access Control).",
-        "• Demo 2: Bypass de autenticación con SQL Injection y Prepared Statements (A05).",
-        "• Demo 3: Simulación de botnet de fuerza bruta, bloqueo NIST y MFA (A07).",
-        "Disponible en: https://github.com/Vgarzaniti/SeguridadTP"
-    ], "Simulación en Vivo", COLOR_EMERALD)
+    for it in [
+        "1. La seguridad no es una etapa final: debe integrarse por diseño desde la concepción de la arquitectura.",
+        "2. La automatización de los atacantes exige defensas automáticas (CI/CD con SAST/DAST, SBOM y alertas).",
+        "3. El código limpio no basta: la configuración cloud y la cadena de suministro son los vectores predominantes.",
+        "4. El Top 10:2025 demuestra que corregir la causa raíz es el único camino sostenible en la industria."
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_TEXT
+        pi.space_after = Pt(8)
+
+    c_demo = s13.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(6.8), Inches(1.8), Inches(5.7), Inches(4.9))
+    c_demo.fill.solid()
+    c_demo.fill.fore_color.rgb = C_CARD_ALT
+    c_demo.line.color.rgb = C_EMERALD
+    c_demo.line.width = Pt(1)
+    tf = c_demo.text_frame
+    tf.margin_left = Inches(0.3)
+    tf.margin_top = Inches(0.25)
+    p = tf.paragraphs[0]
+    p.text = "DEMO EN VIVO: SIMULADOR WEB (SeguridadTP)"
+    p.font.size = Pt(13)
+    p.font.bold = True
+    p.font.color.rgb = C_EMERALD
+    p.space_after = Pt(10)
+
+    for it in [
+        "Plataforma interactiva para visualizar los 3 vectores clave:",
+        "• Demo 1: Manipulación de Objeto Directo (IDOR / A01) con switch Vulnerable vs. RBAC.",
+        "• Demo 2: Inyección SQL (A05) con desglose en vivo del AST y Prepared Statements.",
+        "• Demo 3: Fuerza Bruta / Credential Stuffing (A07) con bloqueo NIST y MFA.",
+        "Pipeline animado en tiempo real con medición de latencia y Web Audio API.",
+        "Repositorio público: github.com/Vgarzaniti/SeguridadTP"
+    ]:
+        pi = tf.add_paragraph()
+        pi.text = f"• {it}"
+        pi.font.size = Pt(11)
+        pi.font.color.rgb = C_WHITE if "•" in it else C_TEXT
+        pi.space_after = Pt(6)
 
     output_path = "OWASP_Top_10_2025_Presentacion.pptx"
     prs.save(output_path)
-    print(f"Presentation generated successfully: {output_path}")
+    print(f"Presentation successfully updated: {output_path}")
 
 if __name__ == "__main__":
     create_deck()

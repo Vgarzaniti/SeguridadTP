@@ -73,26 +73,35 @@ O simplemente haciendo doble clic en el archivo `index.html`.
 
 ---
 
-## 📊 Presentación Grupal (PPTX para 5 Expositores)
+---
 
-El repositorio incluye el archivo listo para presentar **`OWASP_Top_10_2025_Presentacion.pptx`** (formato 16:9 con estética oscura de ciberseguridad), distribuido en 13 diapositivas equilibradas entre 5 oradores:
+## 👥 Integrantes del Equipo
 
-1. **Orador 1 — Introducción y Estado del Arte**:
-   * Qué es OWASP, espacio del problema (APIs, Cloud y CI/CD) y diferencia entre Riesgo vs. Vulnerabilidad.
-   * Metodología de la edición 2025 (2.8M de apps, 248 CWEs) y cambios respecto a 2021.
-2. **Orador 2 — Puestos #1 y #2 (Control de Acceso y Configuración)**:
-   * **A01: Broken Access Control**: 100% de prevalencia, IDOR y absorción de SSRF.
-   * **A02: Security Misconfiguration**: El salto del puesto 5 al 2 debido a la complejidad de la nube.
-3. **Orador 3 — Puestos #3 y #4 (Cadena de Suministro y Criptografía)**:
-   * **A03: Software Supply Chain Failures**: Nueva categoría 2025, caso SolarWinds y SBOM.
-   * **A04: Cryptographic Failures**: Algoritmos obsoletos, números pseudoaleatorios y TLS.
-4. **Orador 4 — Puestos #5 y #6 (Inyección y Diseño)**:
-   * **A05: Injection**: Récord histórico con +44.000 CVEs (SQLi y XSS) y Prepared Statements.
-   * **A06: Insecure Design**: Separar diseño de implementación, fallas de negocio y Threat Modeling.
-5. **Orador 5 — Puestos #7 al #10 y Cierre con Demo**:
-   * **A07** (Autenticación y Fuerza Bruta) & **A08** (Integridad y Deserialización).
-   * **A09** (Alertas sobre Monitoreo) & **A10** (Condiciones Excepcionales y Fallas Abiertas).
-   * Conclusiones generales y pase a la **Demostración en Vivo del Simulador Web**.
+* **Valentín Garzaniti**
+* **Romeo Monfroglio**
+* **Valentino Laure**
+* **Joaquín Caputto**
+* **Mauro Lista**
+
+---
+
+## 📊 Presentación en Diapositivas (PPTX)
+
+El repositorio incluye la presentación **`OWASP_Top_10_2025_Presentacion.pptx`** (formato 16:9 con diseño dark cybersecurity), estructurada en 13 diapositivas con diagramas, tablas comparativas y casos reales:
+
+1. **Portada**: Título oficial, subtítulo y badges elegantes con los 5 integrantes del equipo.
+2. **Metodología y Métricas Gigantes**: Indicadores numéricos destacados sobre 2.8M+ de apps analizadas, 248 CWEs evaluadas y 100% de prevalencia en puestos clave.
+3. **Fundamentos Arquitectónicos**: Fórmula conceptual de cálculo de Riesgo vs. Vulnerabilidad y superficie de ataque web.
+4. **Tabla Comparativa Completa**: Matriz estructurada de los 10 riesgos (2025 vs. 2021) con códigos de color para categorías nuevas y ascensos.
+5. **A01 Broken Access Control**: Layout analítico 60/40 con desglose de la petición HTTP y anatomía de un ataque IDOR mitigado con RBAC.
+6. **A02 Security Misconfiguration**: Falla estructural de la complejidad cloud, errores habituales y endurecimiento con guías NIST/CIS.
+7. **A03 Software Supply Chain Failures**: Caso de estudio del ciberataque a SolarWinds y controles mediante SBOM y Dependency-Track.
+8. **A04 Cryptographic Failures**: Comparativa directa entre prácticas criptográficas inseguras vs. estándares modernos (TLS 1.3, CSPRNG y Argon2).
+9. **A05 Injection**: Estadísticas históricas (+44.000 CVEs) y bloque de código comparativo entre concatenación insegura y Prepared Statements.
+10. **A06 Insecure Design**: Principio "Conceptos > Código", análisis de fallas en la lógica de negocio (caso reservas masivas) y Threat Modeling.
+11. **A07 Autenticación & A08 Integridad**: Credential stuffing (patrón `Winter2025` ➔ `Winter2026`), NIST 800-63b, firmas digitales y deserialización insegura.
+12. **A09 Registro y Alertas & A10 Condiciones Excepcionales**: Importancia de alertas activas (caso filtración oculta 7 años) y prevención de fallas abiertas sin rollback transaccional.
+13. **Conclusiones y Demostración en Vivo**: Pilares de desarrollo seguro y pase al laboratorio interactivo del proyecto.
 
 ---
 
